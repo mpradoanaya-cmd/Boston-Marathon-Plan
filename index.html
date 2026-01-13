@@ -1211,37 +1211,33 @@
         }
 
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem('marathonPlan');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    if (data.raceDate) raceDate = data.raceDate;
-                    if (data.goalTime) goalTime = data.goalTime;
-                    if (data.paces) paces = { ...paces, ...data.paces };
-                    if (data.trainingPlan) {
-                        data.trainingPlan.forEach((week, i) => {
-                            if (trainingPlan[i]) {
-                                trainingPlan[i].days = week.days;
-                                trainingPlan[i].startDate = week.startDate;
-                            }
-                        });
+    const saved = localStorage.getItem('marathonPlan');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            if (data.goalTime) goalTime = data.goalTime;
+            if (data.paces) paces = { ...paces, ...data.paces };
+            if (data.trainingPlan) {
+                data.trainingPlan.forEach((week, i) => {
+                    if (trainingPlan[i]) {
+                        // Only load workout edits, NOT dates
+                        trainingPlan[i].days = week.days;
                     }
-                    
-                    // Update UI
-                    document.getElementById('goal-time-display').textContent = goalTime;
-                    const raceDateObj = new Date(raceDate + 'T00:00:00');
-                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                    document.getElementById('race-date-display').textContent = raceDateObj.toLocaleDateString('en-US', options);
-                    
-                    Object.keys(paces).forEach(key => {
-                        const el = document.getElementById(`pace-${key}`);
-                        if (el) el.textContent = paces[key];
-                    });
-                } catch (e) {
-                    console.log('Could not load saved data');
-                }
+                });
             }
+            
+            // Update UI
+            document.getElementById('goal-time-display').textContent = goalTime;
+            
+            Object.keys(paces).forEach(key => {
+                const el = document.getElementById(`pace-${key}`);
+                if (el) el.textContent = paces[key];
+            });
+        } catch (e) {
+            console.log('Could not load saved data');
         }
+    }
+}
 
         // Close modal on overlay click
         document.getElementById('settings-modal').addEventListener('click', (e) => {
