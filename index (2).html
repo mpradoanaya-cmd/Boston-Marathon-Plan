@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pfitz 55-70 Marathon Plan</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #141416;
+            --bg-hover: #1a1a1d;
+            --border: #2a2a2e;
+            --text-primary: #fafafa;
+            --text-secondary: #a0a0a5;
+            --text-muted: #606065;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-orange: #f97316;
+            --accent-purple: #a855f7;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-pink: #ec4899;
+            --week-header: #1e3a5f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .title-section h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .title-section .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .goal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-top: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .goal-badge:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .editable {
+            cursor: pointer;
+            border-radius: 0.25rem;
+            transition: background 0.15s ease;
+        }
+
+        .editable:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .edit-input {
+            background: var(--bg-dark);
+            border: 1px solid var(--accent-blue);
+            border-radius: 0.25rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: inherit;
+            padding: 0.25rem 0.5rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .edit-input:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .subtitle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .race-date-display {
+            cursor: pointer;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            transition: background 0.15s ease;
+        }
+
+        .race-date-display:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-field {
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-field input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        .modal-field input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .modal-field .hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+        }
+
+        .pace-guide {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .pace-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .pace-item .label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .pace-item .value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.125rem 0.25rem;
+            margin: -0.125rem -0.25rem;
+            border-radius: 0.25rem;
+            transition: background 0.15s ease;
+        }
+
+        .pace-item .value:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .pace-item .value input {
+            background: var(--bg-dark);
+            border: 1px solid var(--accent-blue);
+            border-radius: 0.25rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            padding: 0.125rem 0.25rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .pace-item.mp .label { color: var(--accent-blue); }
+        .pace-item.ga .label { color: var(--accent-green); }
+        .pace-item.lt .label { color: var(--accent-orange); }
+        .pace-item.hm .label { color: var(--accent-purple); }
+        .pace-item.vo2 .label { color: var(--accent-red); }
+        .pace-item.recovery .label { color: var(--accent-teal); }
+        .pace-item.lr .label { color: var(--accent-pink); }
+
+        .calendar {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 2rem;
+        }
+
+        .week-header-row {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.75rem 0.75rem 0 0;
+            overflow: hidden;
+        }
+
+        .week-header-row .corner {
+            background: var(--bg-card);
+            padding: 0.75rem;
+        }
+
+        .week-header-row .day-header {
+            background: var(--bg-card);
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .week-row {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .week-row:last-child {
+            border-radius: 0 0 0.75rem 0.75rem;
+            overflow: hidden;
+        }
+
+        .week-label {
+            background: var(--week-header);
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .week-label .week-num {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .week-label .week-miles {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.7);
+            margin-top: 0.25rem;
+        }
+
+        .day-cell {
+            background: var(--bg-card);
+            min-height: 110px;
+            padding: 0.5rem;
+            position: relative;
+            transition: background 0.15s ease;
+        }
+
+        .day-cell:hover {
+            background: var(--bg-hover);
+        }
+
+        .day-cell.drag-over {
+            background: rgba(59, 130, 246, 0.15);
+            outline: 2px dashed var(--accent-blue);
+            outline-offset: -2px;
+        }
+
+        .day-cell .date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .workout-card {
+            background: var(--bg-dark);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .workout-card:active {
+            cursor: grabbing;
+        }
+
+        .workout-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .workout-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .workout-card.rest { border-left-color: var(--text-muted); }
+        .workout-card.recovery { border-left-color: var(--accent-teal); }
+        .workout-card.ga { border-left-color: var(--accent-green); }
+        .workout-card.lt { border-left-color: var(--accent-orange); }
+        .workout-card.vo2 { border-left-color: var(--accent-red); }
+        .workout-card.long { border-left-color: var(--accent-pink); }
+        .workout-card.mp { border-left-color: var(--accent-blue); }
+        .workout-card.race { 
+            border-left-color: gold; 
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
+        }
+
+        .workout-card .workout-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.2rem;
+        }
+
+        .workout-card.rest .workout-type { color: var(--text-muted); }
+        .workout-card.recovery .workout-type { color: var(--accent-teal); }
+        .workout-card.ga .workout-type { color: var(--accent-green); }
+        .workout-card.lt .workout-type { color: var(--accent-orange); }
+        .workout-card.vo2 .workout-type { color: var(--accent-red); }
+        .workout-card.long .workout-type { color: var(--accent-pink); }
+        .workout-card.mp .workout-type { color: var(--accent-blue); }
+        .workout-card.race .workout-type { color: gold; }
+
+        .workout-card .workout-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .workout-card .workout-miles {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-primary);
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        .workout-card .workout-desc,
+        .workout-card .workout-miles {
+            cursor: text;
+        }
+
+        .workout-card .workout-desc:hover,
+        .workout-card .workout-miles:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25rem;
+        }
+
+        .workout-edit-input {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-blue);
+            border-radius: 0.25rem;
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.3rem;
+            outline: none;
+            width: 100%;
+            resize: none;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .legend-dot.rest { background: var(--text-muted); }
+        .legend-dot.recovery { background: var(--accent-teal); }
+        .legend-dot.ga { background: var(--accent-green); }
+        .legend-dot.lt { background: var(--accent-orange); }
+        .legend-dot.vo2 { background: var(--accent-red); }
+        .legend-dot.long { background: var(--accent-pink); }
+        .legend-dot.mp { background: var(--accent-blue); }
+
+        .instructions {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .instructions strong {
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .week-header-row,
+            .week-row {
+                grid-template-columns: 70px repeat(7, 1fr);
+            }
+            
+            .day-cell {
+                min-height: 90px;
+                padding: 0.35rem;
+            }
+            
+            .workout-card {
+                padding: 0.35rem;
+            }
+            
+            .workout-card .workout-desc {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-section">
+                <h1>Pfitz 55-70 Marathon Plan</h1>
+                <div class="subtitle">
+                    <span>12 Week Schedule · Race Day:</span>
+                    <span class="race-date-display" id="race-date-display" onclick="openSettingsModal()">April 19, 2026</span>
+                </div>
+                <div class="goal-badge" onclick="openSettingsModal()">
+                    <span>🎯</span>
+                    <span>Goal: <span id="goal-time-display">2:58:30</span></span>
+                </div>
+            </div>
+            
+            <div class="pace-guide">
+                <div class="pace-item mp">
+                    <span class="label">Marathon Pace</span>
+                    <span class="value" onclick="editPace(this, 'mp')" id="pace-mp">6:49/mi</span>
+                </div>
+                <div class="pace-item ga">
+                    <span class="label">General Aerobic</span>
+                    <span class="value" onclick="editPace(this, 'ga')" id="pace-ga">7:50 - 8:31/mi</span>
+                </div>
+                <div class="pace-item lt">
+                    <span class="label">Lactate Threshold</span>
+                    <span class="value" onclick="editPace(this, 'lt')" id="pace-lt">6:12 - 6:24/mi</span>
+                </div>
+                <div class="pace-item hm">
+                    <span class="label">Half Marathon</span>
+                    <span class="value" onclick="editPace(this, 'hm')" id="pace-hm">6:29 - 6:41/mi</span>
+                </div>
+                <div class="pace-item recovery">
+                    <span class="label">Recovery</span>
+                    <span class="value" onclick="editPace(this, 'recovery')" id="pace-recovery">>8:52/mi</span>
+                </div>
+                <div class="pace-item vo2">
+                    <span class="label">VO2 Max</span>
+                    <span class="value" onclick="editPace(this, 'vo2')" id="pace-vo2">AFAP</span>
+                </div>
+                <div class="pace-item lr">
+                    <span class="label">Long Run / MLR</span>
+                    <span class="value" onclick="editPace(this, 'lr')" id="pace-lr">7:30 - 8:11/mi</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="instructions">
+            <strong>💡 Tips:</strong> Drag and drop workouts to rearrange your schedule. Click the goal badge or race date to edit settings. Click any pace value to change it.
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settings-modal">
+            <div class="modal">
+                <h2>⚙️ Race Settings</h2>
+                <div class="modal-field">
+                    <label>Goal Time</label>
+                    <input type="text" id="goal-time-input" placeholder="2:58:30">
+                    <div class="hint">Format: H:MM:SS (e.g., 2:58:30)</div>
+                </div>
+                <div class="modal-field">
+                    <label>Race Date</label>
+                    <input type="date" id="race-date-input">
+                    <div class="hint">This will recalculate all training dates</div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar">
+            <div class="week-header-row">
+                <div class="corner"></div>
+                <div class="day-header">Mon</div>
+                <div class="day-header">Tue</div>
+                <div class="day-header">Wed</div>
+                <div class="day-header">Thu</div>
+                <div class="day-header">Fri</div>
+                <div class="day-header">Sat</div>
+                <div class="day-header">Sun</div>
+            </div>
+            <div id="calendar-body"></div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot rest"></div>Rest / Cross Train</div>
+            <div class="legend-item"><div class="legend-dot recovery"></div>Recovery</div>
+            <div class="legend-item"><div class="legend-dot ga"></div>General Aerobic</div>
+            <div class="legend-item"><div class="legend-dot lt"></div>Lactate Threshold</div>
+            <div class="legend-item"><div class="legend-dot vo2"></div>VO2 Max</div>
+            <div class="legend-item"><div class="legend-dot mp"></div>Marathon Pace</div>
+            <div class="legend-item"><div class="legend-dot long"></div>Long Run</div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let raceDate = '2026-04-19';
+        let goalTime = '2:58:30';
+        let paces = {
+            mp: '6:49/mi',
+            ga: '7:50 - 8:31/mi',
+            lt: '6:12 - 6:24/mi',
+            hm: '6:29 - 6:41/mi',
+            recovery: '>8:52/mi',
+            vo2: 'AFAP',
+            lr: '7:30 - 8:11/mi'
+        };
+
+        const trainingPlan = [
+            {
+                week: 1,
+                miles: "51-57",
+                startDate: "2026-01-26",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "GA + Speed", desc: "8-9 mi with 6x10 sec hill sprints + 8x100m strides", miles: "8-9 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "11-12 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "9-10 mi" },
+                    { type: "mp", label: "MP Run", desc: "15-16 miles with 8 miles at marathon pace", miles: "15-16 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "4-6 mi" }
+                ]
+            },
+            {
+                week: 2,
+                miles: "51-57",
+                startDate: "2026-02-02",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "11-12 mi" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "9-10 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "lt", label: "LT Run", desc: "9-10 mi with 20-25 min at LT pace", miles: "9-10 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "16-18 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "4-6 mi" }
+                ]
+            },
+            {
+                week: 3,
+                miles: "55-62",
+                startDate: "2026-02-09",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "GA + Speed", desc: "8-9 mi with 6x10 sec hill sprints + 8x100m strides", miles: "8-9 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "13-14 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "9-10 mi" },
+                    { type: "mp", label: "MP Run", desc: "17-18 miles with 10 miles at marathon pace", miles: "17-18 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "4-6 mi" }
+                ]
+            },
+            {
+                week: 4,
+                miles: "51-57",
+                startDate: "2026-02-16",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "9-10 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "13-14 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "lt", label: "LT Run", desc: "10-11 miles with 25-30 min at LT pace", miles: "10-11 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "17-19 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "4-6 mi" }
+                ]
+            },
+            {
+                week: 5,
+                miles: "51-57",
+                startDate: "2026-02-23",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "GA + Speed", desc: "7-8 miles with 10x 100m strides", miles: "7-8 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "11-12 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "lt", label: "LT Run", desc: "9-10 miles with 25-30 min at LT pace", miles: "9-10 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "15-16 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" }
+                ]
+            },
+            {
+                week: 6,
+                miles: "64-70",
+                startDate: "2026-03-02",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "6-7 mi" },
+                    { type: "vo2", label: "VO2 Max", desc: "11-12 miles with 6x 1km at 5K pace, jog 50-90% interval time", miles: "11-12 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "14-15 mi" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "9-10 mi" },
+                    { type: "mp", label: "MP Run", desc: "18-19 miles with 12 miles at marathon pace", miles: "18-19 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "6-7 mi" }
+                ]
+            },
+            {
+                week: 7,
+                miles: "63-70",
+                startDate: "2026-03-09",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "GA + Speed", desc: "8-9 miles with 8x 100m strides", miles: "8-9 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "14-15 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "6-7 mi" },
+                    { type: "lt", label: "LT Run", desc: "10-11 miles with 30-40 min at LT pace", miles: "10-11 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "19-21 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" }
+                ]
+            },
+            {
+                week: 8,
+                miles: "55-64",
+                startDate: "2026-03-16",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "9-10 mi" },
+                    { type: "vo2", label: "VO2 Max", desc: "9-10 miles with 5x 600m at 5K pace, jog 50-90% interval time", miles: "9-10 mi" },
+                    { type: "ga", label: "Recovery + Speed", desc: "6-7 miles with 6x 100m strides", miles: "6-7 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "mp", label: "Tune Up Race", desc: "8k-15k tune up race, total 10-14 miles", miles: "10-14 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "16-17 mi" }
+                ]
+            },
+            {
+                week: 9,
+                miles: "63-70",
+                startDate: "2026-03-23",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "6-7 mi" },
+                    { type: "vo2", label: "VO2 Max", desc: "10-11 miles with 6x 1km at 5K pace, jog 50-90% interval time", miles: "10-11 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "14-15 mi" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "8-9 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "19-21 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "6-7 mi" }
+                ]
+            },
+            {
+                week: 10,
+                miles: "52-59",
+                startDate: "2026-03-30",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "GA + Speed", desc: "9-10 miles with 6x 10s hill sprints, 12x 100m strides", miles: "9-10 mi" },
+                    { type: "ga", label: "Gen Aerobic", desc: "General aerobic", miles: "8-9 mi" },
+                    { type: "ga", label: "Recovery + Speed", desc: "5-6 miles with 6x 100m strides", miles: "5-6 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "mp", label: "Tune Up Race", desc: "8k-10k tune up race, total 10-12 miles", miles: "10-12 mi" },
+                    { type: "long", label: "Long Run", desc: "Long run", miles: "16-17 mi" }
+                ]
+            },
+            {
+                week: 11,
+                miles: "40-46",
+                startDate: "2026-04-06",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest / Cross Train", miles: "" },
+                    { type: "ga", label: "Recovery + Speed", desc: "6-7 miles with 10x 100m strides", miles: "6-7 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "4-5 mi" },
+                    { type: "vo2", label: "VO2 Max", desc: "8-9 miles with 5x 1km at 5K pace, jog 50-90% interval time", miles: "8-9 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "5-6 mi" },
+                    { type: "long", label: "Med-Long Run", desc: "Med-long run", miles: "12-13 mi" },
+                    { type: "ga", label: "Recovery + Speed", desc: "6-7 miles with 10x 100m strides", miles: "6-7 mi" }
+                ]
+            },
+            {
+                week: 12,
+                miles: "21-27",
+                startDate: "2026-04-13",
+                days: [
+                    { type: "rest", label: "Rest", desc: "Rest", miles: "" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "6-7 mi" },
+                    { type: "mp", label: "Dress Rehearsal", desc: "6-7 miles with 2 miles at marathon pace", miles: "6-7 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "3-4 mi" },
+                    { type: "ga", label: "Recovery + Speed", desc: "4-5 miles with 6x 100m strides", miles: "4-5 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "2-4 mi" },
+                    { type: "recovery", label: "Recovery", desc: "Recovery", miles: "2-4 mi" }
+                ]
+            },
+            {
+                week: "Race",
+                miles: "26.2",
+                startDate: "2026-04-20",
+                days: [
+                    { type: "race", label: "🏃‍♀️ RACE DAY", desc: "Marathon - Let's go sub-3! 🎉", miles: "26.2 mi" },
+                    { type: "rest", label: "", desc: "", miles: "" },
+                    { type: "rest", label: "", desc: "", miles: "" },
+                    { type: "rest", label: "", desc: "", miles: "" },
+                    { type: "rest", label: "", desc: "", miles: "" },
+                    { type: "rest", label: "", desc: "", miles: "" },
+                    { type: "rest", label: "", desc: "", miles: "" }
+                ]
+            }
+        ];
+
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return `${month}/${day}`;
+        }
+
+        function addDays(dateStr, days) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            const date = new Date(year, month - 1, day);
+            date.setDate(date.getDate() + days);
+            const newYear = date.getFullYear();
+            const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+            const newDay = String(date.getDate()).padStart(2, '0');
+            return `${newYear}-${newMonth}-${newDay}`;
+        }
+
+        function createWorkoutCard(workout, dayIndex, weekIndex) {
+            if (!workout.label) return '';
+            
+            const card = document.createElement('div');
+            card.className = `workout-card ${workout.type}`;
+            card.draggable = true;
+            card.dataset.weekIndex = weekIndex;
+            card.dataset.dayIndex = dayIndex;
+            
+            card.innerHTML = `
+                <div class="workout-type">${workout.label}</div>
+                <div class="workout-desc" onclick="editWorkoutField(event, ${weekIndex}, ${dayIndex}, 'desc')">${workout.desc}</div>
+                ${workout.miles ? `<div class="workout-miles" onclick="editWorkoutField(event, ${weekIndex}, ${dayIndex}, 'miles')">${workout.miles}</div>` : ''}
+            `;
+            
+            return card;
+        }
+
+        function editWorkoutField(event, weekIndex, dayIndex, field) {
+            event.stopPropagation();
+            const element = event.target;
+            const workout = trainingPlan[weekIndex].days[dayIndex];
+            const currentValue = field === 'desc' ? workout.desc : workout.miles;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentValue;
+            input.className = 'workout-edit-input';
+            
+            element.textContent = '';
+            element.appendChild(input);
+            input.focus();
+            input.select();
+
+            function saveField() {
+                const newValue = input.value.trim() || currentValue;
+                element.textContent = newValue;
+                if (field === 'desc') {
+                    trainingPlan[weekIndex].days[dayIndex].desc = newValue;
+                } else {
+                    trainingPlan[weekIndex].days[dayIndex].miles = newValue;
+                }
+                saveToLocalStorage();
+            }
+
+            input.addEventListener('blur', saveField);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    element.textContent = currentValue;
+                }
+            });
+        }
+
+        function renderCalendar() {
+            const calendarBody = document.getElementById('calendar-body');
+            calendarBody.innerHTML = '';
+
+            trainingPlan.forEach((week, weekIndex) => {
+                const weekRow = document.createElement('div');
+                weekRow.className = 'week-row';
+                
+                const weekLabel = document.createElement('div');
+                weekLabel.className = 'week-label';
+                weekLabel.innerHTML = `
+                    <div class="week-num">${week.week === 'Race' ? '🏁 Race' : `Week ${week.week}`}</div>
+                    <div class="week-miles">${week.miles} mi</div>
+                `;
+                weekRow.appendChild(weekLabel);
+
+                week.days.forEach((day, dayIndex) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'day-cell';
+                    cell.dataset.weekIndex = weekIndex;
+                    cell.dataset.dayIndex = dayIndex;
+                    
+                    const dateStr = addDays(week.startDate, dayIndex);
+                    cell.innerHTML = `<div class="date">${formatDate(dateStr)}</div>`;
+                    
+                    const card = createWorkoutCard(day, dayIndex, weekIndex);
+                    if (card) {
+                        cell.appendChild(card);
+                    }
+                    
+                    weekRow.appendChild(cell);
+                });
+
+                calendarBody.appendChild(weekRow);
+            });
+
+            setupDragAndDrop();
+        }
+
+        function setupDragAndDrop() {
+            let draggedCard = null;
+            let sourceCell = null;
+
+            document.querySelectorAll('.workout-card').forEach(card => {
+                card.addEventListener('dragstart', (e) => {
+                    draggedCard = card;
+                    sourceCell = card.parentElement;
+                    card.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                    document.querySelectorAll('.day-cell').forEach(cell => {
+                        cell.classList.remove('drag-over');
+                    });
+                    draggedCard = null;
+                    sourceCell = null;
+                });
+            });
+
+            document.querySelectorAll('.day-cell').forEach(cell => {
+                cell.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    cell.classList.add('drag-over');
+                });
+
+                cell.addEventListener('dragleave', () => {
+                    cell.classList.remove('drag-over');
+                });
+
+                cell.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    cell.classList.remove('drag-over');
+
+                    if (draggedCard && cell !== sourceCell) {
+                        const targetCard = cell.querySelector('.workout-card');
+                        
+                        if (targetCard) {
+                            // Swap the cards
+                            sourceCell.appendChild(targetCard);
+                        }
+                        
+                        cell.appendChild(draggedCard);
+
+                        // Update the data model
+                        const sourceWeek = parseInt(sourceCell.dataset.weekIndex);
+                        const sourceDay = parseInt(sourceCell.dataset.dayIndex);
+                        const targetWeek = parseInt(cell.dataset.weekIndex);
+                        const targetDay = parseInt(cell.dataset.dayIndex);
+
+                        const sourceWorkout = trainingPlan[sourceWeek].days[sourceDay];
+                        const targetWorkout = trainingPlan[targetWeek].days[targetDay];
+
+                        trainingPlan[sourceWeek].days[sourceDay] = targetWorkout;
+                        trainingPlan[targetWeek].days[targetDay] = sourceWorkout;
+
+                        // Update data attributes
+                        draggedCard.dataset.weekIndex = targetWeek;
+                        draggedCard.dataset.dayIndex = targetDay;
+                        if (targetCard) {
+                            targetCard.dataset.weekIndex = sourceWeek;
+                            targetCard.dataset.dayIndex = sourceDay;
+                        }
+
+                        // Save changes
+                        saveToLocalStorage();
+                    }
+                });
+            });
+        }
+
+        // Initialize
+        renderCalendar();
+
+        // Modal functions
+        function openSettingsModal() {
+            document.getElementById('goal-time-input').value = goalTime;
+            document.getElementById('race-date-input').value = raceDate;
+            document.getElementById('settings-modal').classList.add('active');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('active');
+        }
+
+        function saveSettings() {
+            const newGoalTime = document.getElementById('goal-time-input').value;
+            const newRaceDate = document.getElementById('race-date-input').value;
+
+            if (newGoalTime && newGoalTime !== goalTime) {
+                goalTime = newGoalTime;
+                document.getElementById('goal-time-display').textContent = goalTime;
+                recalculatePaces();
+            }
+
+            if (newRaceDate && newRaceDate !== raceDate) {
+                raceDate = newRaceDate;
+                recalculateDates();
+                renderCalendar();
+                
+                const raceDateObj = new Date(raceDate + 'T00:00:00');
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('race-date-display').textContent = raceDateObj.toLocaleDateString('en-US', options);
+            }
+
+            closeSettingsModal();
+            saveToLocalStorage();
+        }
+
+        // Convert time string (H:MM:SS or M:SS) to total seconds
+        function timeToSeconds(timeStr) {
+            const parts = timeStr.split(':').map(Number);
+            if (parts.length === 3) {
+                return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            } else if (parts.length === 2) {
+                return parts[0] * 60 + parts[1];
+            }
+            return 0;
+        }
+
+        // Convert seconds to pace string (M:SS)
+        function secondsToPace(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.round(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Convert seconds to time string (H:MM:SS)
+        function secondsToTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.round(seconds % 60);
+            return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function recalculatePaces() {
+            // Calculate marathon pace from goal time
+            const goalSeconds = timeToSeconds(goalTime);
+            const marathonDistance = 26.2188; // miles
+            const mpSecondsPerMile = goalSeconds / marathonDistance;
+            
+            // Calculate all paces based on marathon pace
+            // These offsets are approximate based on typical training relationships
+            const mpPace = secondsToPace(mpSecondsPerMile);
+            
+            // General Aerobic: MP + 60-100 seconds
+            const gaLow = secondsToPace(mpSecondsPerMile + 60);
+            const gaHigh = secondsToPace(mpSecondsPerMile + 100);
+            
+            // Lactate Threshold: MP - 35 to MP - 25 seconds (roughly 15K-HM race pace)
+            const ltLow = secondsToPace(mpSecondsPerMile - 37);
+            const ltHigh = secondsToPace(mpSecondsPerMile - 25);
+            
+            // Half Marathon pace: MP - 20 to MP - 8 seconds
+            const hmLow = secondsToPace(mpSecondsPerMile - 20);
+            const hmHigh = secondsToPace(mpSecondsPerMile - 8);
+            
+            // Recovery: MP + 120+ seconds
+            const recoveryPace = secondsToPace(mpSecondsPerMile + 120);
+            
+            // Long Run / MLR: MP + 40-80 seconds
+            const lrLow = secondsToPace(mpSecondsPerMile + 40);
+            const lrHigh = secondsToPace(mpSecondsPerMile + 80);
+
+            // Update paces object
+            paces.mp = `${mpPace}/mi`;
+            paces.ga = `${gaLow} - ${gaHigh}/mi`;
+            paces.lt = `${ltLow} - ${ltHigh}/mi`;
+            paces.hm = `${hmLow} - ${hmHigh}/mi`;
+            paces.recovery = `>${recoveryPace}/mi`;
+            paces.vo2 = 'AFAP';
+            paces.lr = `${lrLow} - ${lrHigh}/mi`;
+
+            // Update UI
+            document.getElementById('pace-mp').textContent = paces.mp;
+            document.getElementById('pace-ga').textContent = paces.ga;
+            document.getElementById('pace-lt').textContent = paces.lt;
+            document.getElementById('pace-hm').textContent = paces.hm;
+            document.getElementById('pace-recovery').textContent = paces.recovery;
+            document.getElementById('pace-vo2').textContent = paces.vo2;
+            document.getElementById('pace-lr').textContent = paces.lr;
+        }
+
+        function recalculateDates() {
+            const [rYear, rMonth, rDay] = raceDate.split('-').map(Number);
+            const raceDateObj = new Date(rYear, rMonth - 1, rDay);
+            
+            // The plan is 12 weeks. Race is on a Sunday (day 7 of week 12).
+            // Week 12 ends on race day, so week 12 Monday is 6 days before race.
+            // Week 1 Monday is 83 days before race (12 weeks - 1 day = 83 days).
+            
+            for (let i = 0; i < 12; i++) {
+                const weekNumber = i + 1; // Week 1-12
+                // Days before race for Monday of this week
+                // Week 12 Monday = 6 days before race
+                // Week 11 Monday = 13 days before race
+                // Week 1 Monday = 83 days before race
+                const daysBeforeRace = (12 - weekNumber) * 7 + 6;
+                
+                const weekStart = new Date(rYear, rMonth - 1, rDay);
+                weekStart.setDate(weekStart.getDate() - daysBeforeRace);
+                
+                const year = weekStart.getFullYear();
+                const month = String(weekStart.getMonth() + 1).padStart(2, '0');
+                const day = String(weekStart.getDate()).padStart(2, '0');
+                trainingPlan[i].startDate = `${year}-${month}-${day}`;
+            }
+            
+            // Race week (index 12) - race is on Sunday, so "start" is race day
+            // But for display, let's set it to race day
+            trainingPlan[12].startDate = raceDate;
+        }
+
+        // Inline pace editing
+        function editPace(element, paceType) {
+            const currentValue = element.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentValue;
+            input.className = 'edit-input';
+            input.style.width = '120px';
+            
+            element.textContent = '';
+            element.appendChild(input);
+            input.focus();
+            input.select();
+
+            function savePace() {
+                const newValue = input.value.trim() || currentValue;
+                element.textContent = newValue;
+                paces[paceType] = newValue;
+                saveToLocalStorage();
+            }
+
+            input.addEventListener('blur', savePace);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    element.textContent = currentValue;
+                }
+            });
+        }
+
+        // Local storage
+        function saveToLocalStorage() {
+            const data = {
+                raceDate,
+                goalTime,
+                paces,
+                trainingPlan
+            };
+            localStorage.setItem('marathonPlan', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('marathonPlan');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.goalTime) goalTime = data.goalTime;
+                    if (data.paces) paces = { ...paces, ...data.paces };
+                    if (data.trainingPlan) {
+                        data.trainingPlan.forEach((week, i) => {
+                            if (trainingPlan[i]) {
+                                // Only load workout edits, NOT dates
+                                trainingPlan[i].days = week.days;
+                            }
+                        });
+                    }
+                    
+                    // Update UI
+                    document.getElementById('goal-time-display').textContent = goalTime;
+                    
+                    Object.keys(paces).forEach(key => {
+                        const el = document.getElementById(`pace-${key}`);
+                        if (el) el.textContent = paces[key];
+                    });
+                } catch (e) {
+                    console.log('Could not load saved data');
+                }
+            }
+        }
+
+        // Close modal on overlay click
+        document.getElementById('settings-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeSettingsModal();
+            }
+        });
+
+        // Close modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSettingsModal();
+            }
+        });
+
+        // Load saved customizations (but keep correct dates)
+        loadFromLocalStorage();
+        renderCalendar();
+    </script>
+</body>
+</html>
